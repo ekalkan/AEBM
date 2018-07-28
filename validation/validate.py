@@ -3,13 +3,13 @@ matplotlib.use('TkAgg')
 
 import matplotlib.pyplot as plt
 
-from performance_point import performance_point
-from demand import get_demand
-from spectrum import build_spectrum
-from damage import *
-from capacity import *
-import aebm
-from data_tables import pref_periods
+from ..performance_point import performance_point
+from ..demand import get_demand
+from ..spectrum import build_spectrum
+from ..damage import *
+from ..capacity import *
+from ..aebm import run as run_aebm
+from ..data_tables import pref_periods
 
 hazard_x = [
     0.010,
@@ -307,7 +307,7 @@ def shakecast_example():
     r_rup = 20
 
     capacity = get_capacity('C2', 'high', 1, 'baseline', 'poor', 24, 2, 1990)
-    damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
+    damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = run_aebm(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
 
     plt.figure()
     plt.plot([p['disp'] for p in demand],
@@ -343,8 +343,8 @@ def shakecast_example():
     plt.show()
 
 if __name__ == '__main__':
-    capacity = get_capacity('PC1', 'high', 7, 'very_poor', 'poor', 24, 2, 1990)
-    damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
+    capacity = get_capacity('PC1', 'high', 7, 24, 2, 1990, 'very_poor', 'poor')
+    damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = run_aebm(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
 
     plt.figure()
     plt.plot([p['disp'] for p in demand],
