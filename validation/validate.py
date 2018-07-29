@@ -364,7 +364,7 @@ if __name__ == '__main__':
     plt.plot([p['x'] for p in intersections],
         [p['y'] for p in intersections], 'yo', label='Intersections')
 
-    plt.xlim(xmax=demand[-1]['x'] * 2)
+    plt.xlim(0, xmax=demand[-1]['x'] * 2)
     plt.title('Performance Point')
     plt.xlabel('Spectral Displacement')
     plt.ylabel('Spectral Acceleration')
