@@ -1,10 +1,10 @@
 import unittest
-from damage import *
-from capacity import *
-from damping import get_kappa
+from ..damage import *
+from ..capacity import get_modal_height
+from ..capacity import get_modal_response
 
 class TestDamageStates(unittest.TestCase):
-    def test_validate(self):
+    def test_workbookValidation(self):
         # validation
         validation = {
           '1': {
@@ -265,46 +265,27 @@ class TestDamageStates(unittest.TestCase):
           }
         }
 
-        # error = ''
-        # for name, test in validation.iteritems():
-        #     d_states = get_damage_state_medians(test['mbt'], test['sdl'], test['performance_rating'], test['height'], test['modal_height'], test['modal_response'])
+        error = ''
+        for name, test in validation.iteritems():
+            test['modal_height'] = get_modal_height(test['mbt'], test['floors_ag'])
+            test['modal_response'] = get_modal_response(test['mbt'], test['bid'], test['floors_ag'])
 
-        #     for state in d_states.keys():
-        #         diff = abs(d_states[state] - test['expected'][state]) / test['expected'][state]
-        #         if diff > .01:
-        #             error += '\n{}: {} off by {}... expected {}, got {} \n--------------------------\n{}\n'.format(
-        #               name,
-        #               state,
-        #               diff,
-        #               test['expected'][state],
-        #               d_states[state],
-        #               test
-        #             )
+            d_states = get_damage_state_medians(test['mbt'], test['sdl'], test['perf_rating'], test['height'], test['modal_height'], test['modal_response'])
 
-        # if error:
-        #     raise Exception(error)
+            for state in d_states.keys():
+                diff = abs(d_states[state] - test['expected'][state]) / test['expected'][state]
+                if diff > .01:
+                    error += '\n{}: {} off by {}... expected {}, got {} \n--------------------------\n{}\n'.format(
+                      name,
+                      state,
+                      diff,
+                      test['expected'][state],
+                      d_states[state],
+                      test
+                    )
 
-class TestKappa(unittest.TestCase):
-    def test_validate(self):
-        kappa = get_kappa('baseline', 1971, 6.5, 20)
-        self.assertAlmostEqual(kappa, .6)
-
-        kappa = get_kappa('poor', 1961, 6.5, 20)
-        self.assertAlmostEqual(kappa, .4)
-
-        kappa = get_kappa('baseline', 1990, 7.9, 11.2)
-        self.assertAlmostEqual(kappa, .7)
-
-        kappa = get_kappa('very_poor', 1990, 7.9, 11.2)
-        self.assertAlmostEqual(kappa, .5)
-
-
-        kappa = get_kappa('very_poor', 1955, 7.9, 11.2)
-        self.assertAlmostEqual(kappa, .3)
-
-
-        kappa = get_kappa('very_poor', 1940, 7.9, 11.2)
-        self.assertAlmostEqual(kappa, .2)
+        if error:
+            raise Exception(error)
 
 if __name__ == '__main__':
     unittest.main()

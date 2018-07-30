@@ -45,6 +45,7 @@ def run(capacity, hazard, hazard_beta, pref_periods, mag, r_rup):
         med_intersections: intersections of median capacity and median demand
         lower_intersections: intersections of median capacity and lower demand
         upper_intersections: intersections of median capacity and upper demand
+
     '''
     demand, lower_demand, upper_demand = get_demand(hazard, hazard_beta, pref_periods, capacity, mag, r_rup)
     med_intersections = performance_point(capacity['curve'], demand)
