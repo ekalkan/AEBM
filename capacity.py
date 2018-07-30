@@ -456,13 +456,13 @@ def get_elastic_damping(mbt):
     }
 
     return lookup.get(mbt, .07)
-def get_capacity_curve(d_y, a_y, d_u, a_u):
+def get_capacity_curve(d_y, a_y, d_u, a_u, n_points=10):
     k = (a_u**2 - a_y**2 + a_y**2 * (d_y - d_u) / d_y) / (2 * (a_u - a_y) + (a_y / d_y) * (d_y - d_u))
     b = a_u - k
     a = math.sqrt(d_y / a_y * b**2 * (d_u - d_y) / (a_y - k))
 
     # pick 10 points between dy and du
-    incr = (d_u - d_y) / 10
+    incr = (d_u - d_y) / n_points
 
     d = d_y + incr
     points = [{'x': 0, 'y': 0}, {'x': d_y, 'y': a_y}]
@@ -479,13 +479,29 @@ def get_capacity_curve(d_y, a_y, d_u, a_u):
 
     return points
 
-def get_capacity(mbt, sdl, bid, performance_rating, quality_rating, height, stories, year, elastic_period=None, 
+def get_capacity(mbt, sdl, bid, height, stories, year, performance_rating='baseline', quality_rating='poor', elastic_period=None, 
         elastic_damping=None, design_period=None, ultimate_period=None, design_coefficient=None, modal_weight=None,
         modal_height=None, modal_response=None, pre_yield=None, post_yield=None,
         max_strength=None, ductility=None, default_damage_state_beta=None):
 
     '''
-    
+    Builds a dictionary that contains a capacity curve as well as the
+    various parameters used to generate it and potential damage states
+    when shaking occurs
+
+    Args:
+        mbt: HAZUS model building type
+        sdl: seasmic design level (special, high, moderate, low)
+        bid: basis ID, 1-7, describes structural deficiencies from FEMA 155
+        height: height of the structure in feet
+        stories: count of stories above ground.
+        year: year the building was constructured or retrofit
+        performance_rating: DEFAULT 'baseline', structural performance rating (baseline, poor, or very_poor)
+        quality_rating: DEFAULT 'poor', The quality of this structural data (high, moderate, poor, very_poor) elastic_period=None, 
+        elastic_damping=None, design_period=None, ultimate_period=None, design_coefficient=None, modal_weight=None,
+        modal_height=None, modal_response=None, pre_yield=None, post_yield=None,
+        max_strength=None, ductility=None, default_damage_state_beta=None
+
     '''
 
     elastic_period = elastic_period if elastic_period else get_default_period(mbt, sdl, height)
@@ -511,27 +527,27 @@ def get_capacity(mbt, sdl, bid, performance_rating, quality_rating, height, stor
     capacity_curve = get_capacity_curve(yield_point['x'], yield_point['y'], ultimate_point['x'], ultimate_point['y'])
 
     return {
-          'elastic_period': elastic_period,
-          'elastic_damping': elastic_damping,
-          'design_period': design_period,
+          'curve': capacity_curve,
+          'damage_state_medians': damage_state_medians,
+          'default_damage_state_beta': default_damage_state_beta,
           'design_coefficient': design_coefficient,
-          'modal_weight': modal_weight,
+          'design_period': design_period,
+          'ductility': ductility,
+          'elastic_damping': elastic_damping,
+          'elastic_period': elastic_period,
+          'max_strength': max_strength,
           'modal_height': modal_height,
           'modal_response': modal_response,
-          'pre_yield': pre_yield,
+          'modal_weight': modal_weight,
+          'performance_rating': performance_rating,
           'post_yield': post_yield,
-          'max_strength': max_strength,
-          'ductility': ductility,
-          'damage_state_medians': damage_state_medians,
-          'yield_point': yield_point,
-          'ultimate_point': ultimate_point,
-          'ultimate_period': ultimate_period,
-          'curve': capacity_curve,
-          'year': year,
-          'default_damage_state_beta': default_damage_state_beta,
-          'stories': stories,
+          'pre_yield': pre_yield,
           'quality_rating': quality_rating,
-          'performance_rating': performance_rating
+          'stories': stories,
+          'ultimate_period': ultimate_period,
+          'ultimate_point': ultimate_point,
+          'year': year,
+          'yield_point': yield_point
     }
 
 

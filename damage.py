@@ -53,51 +53,7 @@ def get_default_damage_state_beta(quality_rating, performance_rating, year, stor
 def get_damage_state_beta(default_beta, default_median, lower_bound_demand_disp, lower_bound_demand_acc, upper_bound_demand_disp, upper_bound_demand_acc, demand_uncertainty, quality_rating, performance_rating, year, stories):
 
     '''
-        MIN(
-            1.1*default_beta,
-            MAX(
-                0.9*default_beta,
-                SQRT(
-                    (MIN(
-                        MAX(
-                            LN(
-                                IF(
-                                    upper_bound_demand_disp<1.2*default_median,
-                                    upper_bound_demand_disp,
-                                    1.2*default_median
-                                )/
-                                IF(lower_bound_demand_disp<1.2*default_median,
-                                lower_bound_demand_disp,
-                                1.2*default_median)
-                            ) / 2
-                            ,
-                            demand_uncertainty / 2
-                        ),
-                        2 * demand_uncertainty)
-                    )^2
-                    +(MIN(
-                        MAX(
-                            LN(
-                                IF(
-                                    upper_bound_demand_acc<1.2*default_median,
-                                    upper_bound_demand_acc,
-                                    1.2*default_median
-                                )/
-                                IF(
-                                    lower_bound_demand_acc<1.2*default_median,
-                                    lower_bound_demand_acc,
-                                    1.2*default_median
-                                )
-                            )/2,
-                            beta_c/2
-                        ),
-                        2*beta_c
-                    )
-                    )^2
-                    +
-                    beta_t^2)
-                )
-            )
+    Calculate the uncertainty for a specific damage state
     '''
 
     uncertainty_lookup = {

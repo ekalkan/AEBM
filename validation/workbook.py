@@ -1,0 +1,110 @@
+import matplotlib
+matplotlib.use('TkAgg')
+
+import matplotlib.pyplot as plt
+
+from ..performance_point import performance_point
+from ..demand import get_demand
+from ..spectrum import build_spectrum
+from ..damage import *
+from ..capacity import *
+from ..aebm import run as run_aebm
+from ..data_tables import pref_periods
+from data import *
+
+
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+
+def run():
+    capacity = get_capacity('PC1', 'high', 7, 24, 2, 1990, 'very_poor', 'poor')
+    damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = run_aebm(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
+
+    pp_fig = plt.figure()
+    plt.plot([p['disp'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+    plt.plot([p['disp'] for p in upper_demand],
+        [p['y'] for p in upper_demand], label='Upper bound demand')
+    plt.plot([p['disp'] for p in lower_demand],
+        [p['y'] for p in lower_demand], label='Lower bound demand')
+    plt.plot([p['x'] for p in capacity['curve']],
+        [p['y'] for p in capacity['curve']], 'b', label='Capacity Curve')
+    plt.plot([p['disp'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
+
+
+    intersections = med_intersections + lower_intersections + upper_intersections
+    # intersections
+    plt.plot([p['x'] for p in intersections],
+        [p['y'] for p in intersections], 'yo', label='Intersections')
+
+    plt.xlim(xmax=demand[-1]['x'] * 2)
+    plt.title('Performance Point')
+    plt.xlabel('Spectral Displacement')
+    plt.ylabel('Spectral Acceleration')
+    plt.legend()
+
+    capacity_fig = plt.figure()
+    plt.title('Capacity Check')
+    plt.xlabel('Spectral Displacement')
+    plt.ylabel('Spectral Acceleration')
+    plt.plot([p['x'] for p in capacity['curve']],
+    [p['y'] for p in capacity['curve']], 'b', label='Computed Capacity Curve')
+    plt.plot(capacity_x, capacity_y, 'r', label='Capacity Curve Check')
+
+    plt.xlim(0,10)
+    plt.legend()
+
+    acc_diff_fig = plt.figure()
+    acc_difs = []
+    for dem in demand:
+        for c in demand_check:
+            if isclose(c['x'], dem['x']):
+                acc_difs += [{'x': dem['x'], 'y': abs(c['y'] - dem['y'])/c['y']}]
+                break
+
+    plt.plot([p['x'] for p in acc_difs], [p['y'] * 100 for p in acc_difs], 'o')
+
+    plt.plot([p['x'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+
+    plt.plot([p['x'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
+    
+    plt.title('Acceleration Check')
+    plt.xlabel('Period (s)')
+    plt.ylabel('% Difference')
+
+    disp_diff_fig = plt.figure()
+    disp_difs = []
+    acc_difs = []
+    for dem in demand:
+        for c in demand_check:
+            if isclose(c['x'], dem['x']):
+                diff = abs(c['disp'] - dem['disp'])
+                ratio = 0 if diff < .001 else diff / c['disp']
+
+                disp_difs += [{'x': dem['x'], 'y': ratio}]
+                break
+  
+    plt.plot([p['x'] for p in disp_difs][1:], [p['y'] * 100 for p in disp_difs][1:], 'o')
+
+
+    plt.plot([p['x'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+
+    plt.plot([p['x'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
+    
+    plt.title('Displacement Check')
+    plt.xlabel('Period (s)')
+    plt.ylabel('% Difference')
+
+    return pp_fig, capacity_fig, acc_diff_fig, disp_diff_fig
+
+def main():
+    pp_fig, capacity_fig, acc_diff_fig, disp_diff_fig = run()
+    plt.show()
+
+if __name__ == '__main__':
+    main()
