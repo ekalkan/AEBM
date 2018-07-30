@@ -218,8 +218,6 @@ capacity_y = [
 ]
 
 
-
-kappa = .5
 mag = 7.9
 hazard_beta = .4
 r_rup = 11.18

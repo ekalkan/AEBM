@@ -18,10 +18,10 @@ if __name__ == '__main__':
 
     # save workbook validation figures
     pp_fig.savefig(os.path.join(path, 'perf_point1'))
-    capacity_fig.savefig(os.path.join(path, 'capcity_comp'))
+    capacity_fig.savefig(os.path.join(path, 'capacity_comp'))
     acc_diff_fig.savefig(os.path.join(path, 'acc_diff'))
     disp_diff_fig.savefig(os.path.join(path, 'disp_diff'))
 
     # save shakecast figures
-    pp_fig.savefig(os.path.join(path, 'perf_point2'))
+    pp_fig2.savefig(os.path.join(path, 'perf_point2'))
     impact_fig.savefig(os.path.join(path, 'impact_fig'))

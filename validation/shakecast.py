@@ -31,7 +31,7 @@ def run():
 
     pp_fig = plt.figure()
     plt.plot([p['disp'] for p in demand],
-        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+        [p['y'] for p in demand], '-ro', label='Median Demand')
     plt.plot([p['disp'] for p in upper_demand],
         [p['y'] for p in upper_demand], label='Upper bound demand')
     plt.plot([p['disp'] for p in lower_demand],
@@ -45,10 +45,10 @@ def run():
     plt.plot([p['x'] for p in intersections],
         [p['y'] for p in intersections], 'yo', label='Intersections')
 
-    plt.xlim(xmax=demand[-1]['x'] * 2)
-    plt.title('Performance Point: "C2", "high", 1, "baseline", "poor", 24, 2, 1990')
-    plt.xlabel('Spectral Displacement')
-    plt.ylabel('Spectral Acceleration')
+    plt.xlim(0, xmax=demand[-1]['x'] * 2)
+    plt.title('Performance Point Calculation')
+    plt.xlabel('Spectral Displacement (inches)')
+    plt.ylabel('Spectral Acceleration (%g)')
     plt.legend()
 
     impact_fig = plt.figure()
@@ -59,7 +59,7 @@ def run():
     m.set_facecolor('gold')
     e.set_facecolor('orange')
     c.set_facecolor('r')
-    plt.title('Potential Impact: "C2", "high", 1, "baseline", "poor", 24, 2, 1990')
+    plt.title('Potential Impact')
 
     return pp_fig, impact_fig
 

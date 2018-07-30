@@ -21,8 +21,9 @@ def run():
     damage_probs, capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = run_aebm(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
 
     pp_fig = plt.figure()
+    plt.xlim(xmin=0)
     plt.plot([p['disp'] for p in demand],
-        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+        [p['y'] for p in demand], '-ro', label='Calculated Demand')
     plt.plot([p['disp'] for p in upper_demand],
         [p['y'] for p in upper_demand], label='Upper bound demand')
     plt.plot([p['disp'] for p in lower_demand],
@@ -30,7 +31,7 @@ def run():
     plt.plot([p['x'] for p in capacity['curve']],
         [p['y'] for p in capacity['curve']], 'b', label='Capacity Curve')
     plt.plot([p['disp'] for p in demand_check],
-        [p['y'] for p in demand_check], '-go', label='Validation')
+        [p['y'] for p in demand_check], '-go', label='Demand Validation')
 
 
     intersections = med_intersections + lower_intersections + upper_intersections
@@ -39,20 +40,20 @@ def run():
         [p['y'] for p in intersections], 'yo', label='Intersections')
 
     plt.xlim(xmax=demand[-1]['x'] * 2)
-    plt.title('Performance Point')
-    plt.xlabel('Spectral Displacement')
-    plt.ylabel('Spectral Acceleration')
+    plt.title('Performance Point Workbook Validation')
+    plt.xlabel('Spectral Displacement (inches)')
+    plt.ylabel('Spectral Acceleration (%g)')
     plt.legend()
 
     capacity_fig = plt.figure()
-    plt.title('Capacity Check')
-    plt.xlabel('Spectral Displacement')
-    plt.ylabel('Spectral Acceleration')
+    plt.title('Capacity Workbook Validation')
+    plt.xlabel('Spectral Displacement (inches)')
+    plt.ylabel('Spectral Acceleration (%g)')
     plt.plot([p['x'] for p in capacity['curve']],
     [p['y'] for p in capacity['curve']], 'b', label='Computed Capacity Curve')
-    plt.plot(capacity_x, capacity_y, 'r', label='Capacity Curve Check')
+    plt.plot(capacity_x, capacity_y, 'r', label='Capacity Curve Validation')
 
-    plt.xlim(0,10)
+    plt.xlim(0, 10)
     plt.legend()
 
     acc_diff_fig = plt.figure()
@@ -64,14 +65,8 @@ def run():
                 break
 
     plt.plot([p['x'] for p in acc_difs], [p['y'] * 100 for p in acc_difs], 'o')
-
-    plt.plot([p['x'] for p in demand],
-        [p['y'] for p in demand], '-ro', label='Calculated Curve')
-
-    plt.plot([p['x'] for p in demand_check],
-        [p['y'] for p in demand_check], '-go', label='Validation')
     
-    plt.title('Acceleration Check')
+    plt.title('Acceleration Difference (vs. workbook)')
     plt.xlabel('Period (s)')
     plt.ylabel('% Difference')
 
@@ -88,15 +83,8 @@ def run():
                 break
   
     plt.plot([p['x'] for p in disp_difs][1:], [p['y'] * 100 for p in disp_difs][1:], 'o')
-
-
-    plt.plot([p['x'] for p in demand],
-        [p['y'] for p in demand], '-ro', label='Calculated Curve')
-
-    plt.plot([p['x'] for p in demand_check],
-        [p['y'] for p in demand_check], '-go', label='Validation')
     
-    plt.title('Displacement Check')
+    plt.title('Demand Displacement Difference (vs. workbook)')
     plt.xlabel('Period (s)')
     plt.ylabel('% Difference')
 
