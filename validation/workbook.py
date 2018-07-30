@@ -46,7 +46,7 @@ def run():
     plt.legend()
 
     capacity_fig = plt.figure()
-    plt.title('Capacity Workbook Validation')
+    plt.title('Capacity Curve Workbook Validation')
     plt.xlabel('Spectral Displacement (inches)')
     plt.ylabel('Spectral Acceleration (%g)')
     plt.plot([p['x'] for p in capacity['curve']],
